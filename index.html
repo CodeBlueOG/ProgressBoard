@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>My Progress Dashboard</h1>
+
+    <p>It is a new day, make it yours and make it the best!</p>
+
+    <div class="task-toolbar">
+        <input type="text" id="task-input" placeholder="Enter a new challenge">
+        <button id="add-task">+ Add Task</button>
+        <button id="reset-board">Reset Board</button>
+    </div>
+
+    <div class="board">
+        <div class="column" id="todo-column">
+            <h2>To Do</h2>
+        </div>
+
+        <div class="column" id="progress-column">
+            <h2>In Progress</h2>
+        </div>
+
+        <div class="column" id="completed-column">
+            <h2>Completed</h2>
+        </div>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
