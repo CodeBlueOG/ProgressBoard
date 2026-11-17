@@ -3,6 +3,43 @@ console.log("Loaded tasks:", tasks);
 function saveTasks() {
     localStorage.setItem("progressboard-tasks", JSON.stringify(tasks));
 }
+function renderFocusTasks() {
+    const focusContainer = document.querySelector("#focus-tasks");
+
+    focusContainer.replaceChildren();
+
+    const today = new Date().toDateString();
+
+    const focusedTasks = tasks.filter(function(item) {
+        return item.focusDate === today;
+    });
+
+    focusedTasks.forEach(function(item) {
+        const focusCard = document.createElement("div");
+        focusCard.className = "focus-item";
+
+        const taskName = document.createElement("span");
+        taskName.textContent = item.name;
+
+        focusCard.appendChild(taskName);
+        const statusText = document.createElement("span");
+        statusText.className = "focus-status";
+
+        if (item.status === "todo") {
+            statusText.textContent = "To Do";
+        }
+        else if (item.status === "progress") {
+            statusText.textContent = "In Progress";
+        }
+        else if (item.status === "completed") {
+            statusText.textContent = "Completed";
+        }
+
+        focusCard.appendChild(statusText);
+        focusContainer.appendChild(focusCard);
+    });
+}
+
 function renderTask(task) {
      const newCard = document.createElement("div");
 
@@ -29,6 +66,39 @@ function renderTask(task) {
 
     deleteButton.className = "delete-task";
 
+    const focusButton = document.createElement("button");
+
+    focusButton.textContent = task.focusDate === new Date().toDateString()
+        ? "Remove from Focus"
+        : "+ Focus";
+    focusButton.className = "focus-button";
+
+    focusButton.addEventListener("click", function() {
+    const today = new Date().toDateString();
+
+    if (task.focusDate === today) {
+        task.focusDate = null;
+        focusButton.textContent = "+ Focus";
+    }
+    else {
+        const selectedCount = tasks.filter(function(item) {
+            return item.focusDate === today;
+        }).length;
+
+        if (selectedCount >= 3) {
+            alert("You can only select three daily challenges.");
+            return;
+        }
+
+        task.focusDate = today;
+        focusButton.textContent = "Remove from Focus";
+    }
+
+    saveTasks();
+    renderFocusTasks();
+});
+    newCard.appendChild(focusButton);
+
     newCard.appendChild(deleteButton);
     deleteButton.addEventListener("click", function() {
         const confirmed = confirm("Are you sure you want to delete this task?");
@@ -41,6 +111,7 @@ function renderTask(task) {
             saveTasks();
         }
         newCard.remove();
+        renderFocusTasks();
         });
 
     moveButton.addEventListener("click", function() {
@@ -59,6 +130,7 @@ function renderTask(task) {
         }
         console.log(task.status, task.completed);
         saveTasks();
+        renderFocusTasks();
     });
 
     if (task.status === "todo") {
@@ -85,7 +157,8 @@ function addTask() {
     const task = {
         name: taskName,
         status: "todo",
-        completed: false
+        completed: false,
+        focusDate: null,
     };
 
     tasks.push(task);
@@ -111,7 +184,9 @@ function resetBoard() {
     document.querySelectorAll(".task-card").forEach(function(card) {
         card.remove();
     });
+    renderFocusTasks();
 }
+
 
 addTaskButton.addEventListener("click", addTask);
 resetButton.addEventListener("click", resetBoard);
